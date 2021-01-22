@@ -6,12 +6,12 @@
 namespace Deployer;
 
 task('uploads:sync', function() {
-    $server = \Deployer\Task\Context::get()->getServer()->getConfiguration();
+    $server = \Deployer\Task\Context::get();
     $upload_dir = 'web/app/uploads';
-    $user       = $server->getUser();
-    $host       = $server->getHost();
-    $port = $server->getPort() ? ' -p ' . $server->getPort() : '';
-    $identityFile = $server->getPrivateKey() ? ' -i ' . $server->getPrivateKey() : '';
+    $user       = $server->getHost()->getUser();
+    $host       = $server->getHost()->getRealHostname();
+    $port = $server->getHost()->getPort() ? ' -p ' . $server->getHost()->getPort() : '';
+    $identityFile = $server->getHost()->getIdentityFile() ? ' -i ' . $server->getHost()->getIdentityFile() : '';
 
     writeln('<comment>> Receive remote uploads ... </comment>');
     runLocally("rsync -avzO --no-o --no-g -e 'ssh$port$identityFile' $user@$host:{{deploy_path}}/shared/$upload_dir/ $upload_dir");
