@@ -1,5 +1,5 @@
 {
-    "name": "authgrp/deployer-wp-recipes",
+    "name": "authwit/deployer-wp-recipes",
     "description": "Wordpress deployer recipes",
     "type": "library",
     "license": "MIT",
