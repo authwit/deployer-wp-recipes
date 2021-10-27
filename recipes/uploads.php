@@ -1,22 +1,23 @@
 <?php
 
-/* WP UPLOADS TASK
+/* wp uploads task
 /* --------------------- */
 
-namespace Deployer;
+namespace deployer;
 
 task('uploads:sync', function() {
-    $server = \Deployer\Task\Context::get();
+     $config = \deployer\task\context::get()->getconfig();
+     $server = \deployer\task\context::get()->gethost() ;
+
     $upload_dir = 'web/app/uploads';
-    $user       = $server->getHost()->getUser();
-    $host       = $server->getHost()->getRealHostname();
-    $port = $server->getHost()->getPort() ? ' -p ' . $server->getHost()->getPort() : '';
-    $identityFile = $server->getHost()->getIdentityFile() ? ' -i ' . $server->getHost()->getIdentityFile() : '';
+    $user       =  $config->get('user');
+    $host       = $config->get('hostname');
+    $port = $server->getport() ? ' -p ' . $server->getport() : '';
+    $identityfile = $server->getidentityfile() ? ' -i ' . $server->getidentityfile() : '';
+    writeln('<comment>> receive remote uploads ... </comment>');
+    runlocally("rsync -avzo --no-o --no-g -e 'ssh$port$identityfile' $user@$host:{{deploy_path}}/shared/$upload_dir/ $upload_dir");
 
-    writeln('<comment>> Receive remote uploads ... </comment>');
-    runLocally("rsync -avzO --no-o --no-g -e 'ssh$port$identityFile' $user@$host:{{deploy_path}}/shared/$upload_dir/ $upload_dir");
+    writeln('<comment>> send local uploads ... </comment>');
+    runlocally("rsync -avzo --no-o --no-g -e 'ssh$port$identityfile' $upload_dir/ $user@$host:{{deploy_path}}/shared/$upload_dir");
 
-    writeln('<comment>> Send local uploads ... </comment>');
-    runLocally("rsync -avzO --no-o --no-g -e 'ssh$port$identityFile' $upload_dir/ $user@$host:{{deploy_path}}/shared/$upload_dir");
-
-})->desc('Sync uploads');
+})->desc('sync uploads');
