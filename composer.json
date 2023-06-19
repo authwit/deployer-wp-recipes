@@ -11,8 +11,7 @@
         {
             "name": "deletosh",
             "email": "ask@deletosh.com"
-        },
-        
+        }
     ],
     "minimum-stability": "stable",
     "require": {
