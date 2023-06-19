@@ -7,10 +7,15 @@
         {
             "name": "cstaelen",
             "email": "clement@ukhom.com"
-        }
+        },
+        {
+            "name": "deletosh",
+            "email": "ask@deletosh.com"
+        },
+        
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": ">=5.6.0"
+        "php": ">=7.4.0"
     }
 }
