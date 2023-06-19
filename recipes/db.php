@@ -69,8 +69,8 @@ task('db:cmd:pull', function() {
 
 task('db:cmd:push', function() {
     writeln('<comment>> Exports local db to remote : <info>' . get('dump_file') . '</info>... </comment>');
-    run('cd {{deploy_path}}/current && wp db import ' . get('dump_filepath'));
-    run('cd {{deploy_path}}/current && wp search-replace ' . get('local_url') . ' ' . get('remote_url'));
+    run('cd {{deploy_path}}/current && wp-cli db import ' . get('dump_filepath'));
+    run('cd {{deploy_path}}/current && wp-cli search-replace ' . get('local_url') . ' ' . get('remote_url'));
     run('rm -f ' . get('dump_filepath') );
 
 })->desc('Exports DB');
