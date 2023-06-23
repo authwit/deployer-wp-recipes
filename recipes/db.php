@@ -20,7 +20,7 @@ task('db:remote:backup', function() {
 
     writeln('<comment>> Remote dump : <info>' . get('dump_file') .' </info></comment>');
     run('mkdir -p ' . get('dump_path'));
-    run('cd {{deploy_path}}/current/ && wp-clis db export ' . get('dump_filepath') . ' --add-drop-table');
+    run('cd {{deploy_path}}/current/ && wp-cli db export ' . get('dump_filepath') . ' --add-drop-table');
 
     runLocally('mkdir -p .data/db_backups');
     download(get('dump_filepath'), '.data/db_backups/' . get('dump_file'));
