@@ -5,7 +5,7 @@
 
 namespace Deployer;
 
-task('deploy:assets', function() {
+task('deploy:assets', function () {
 
     $config = get('wp-recipes');
 
@@ -16,6 +16,6 @@ task('deploy:assets', function() {
     }
     writeln('<comment>> Uploads assets ...</comment>');
     run('rm  -rf ' . $config['theme_dir'] . $config['theme_name']);
-    upload( $config['theme_dir'] . $config['theme_dist'], '{{release_path}}/' . $config['theme_dir'] . $config['theme_name']);
+    upload($config['theme_dir'] . $config['theme_dist'], '{{release_path}}/' . $config['theme_dir'] . $config['theme_name']);
 
 })->desc('Upload dist assets folder');
