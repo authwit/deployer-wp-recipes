@@ -20,7 +20,7 @@ task('db:remote:backup', function() {
 
     writeln('<comment>> Remote dump : <info>' . get('dump_file') .' </info></comment>');
     run('mkdir -p ' . get('dump_path'));
-    run('cd {{deploy_path}}/current/ && wp-cli db export ' . get('dump_filepath') . ' --add-drop-table');
+    run('cd {{deploy_path}}/current/ && wp-cli db export ' . get('dump_filepath') . ' --add-drop-table --hex-blob');
 
     runLocally('mkdir -p .data/db_backups');
     download(get('dump_filepath'), '.data/db_backups/' . get('dump_file'));
@@ -40,7 +40,7 @@ task('db:local:backup', function() {
 
     writeln('<comment>> Local dump : <info>' . get('dump_file') .' </info></comment>');
     runLocally('mkdir -p .data/db_backups');
-    runLocally('wp db export .data/db_backups/' . get('dump_file') . ' --add-drop-table');
+    runLocally('wp db export .data/db_backups/' . get('dump_file') . ' --add-drop-table --hex-blob');
 
     run('mkdir -p ' . get('dump_path'));
     upload('.data/db_backups/' . get('dump_file'),  get('dump_filepath'));
@@ -59,7 +59,8 @@ task('db:create', function() {
 
 task('db:cmd:pull', function() {
     writeln('<comment>> Imports remote db to local :<info>' . get('dump_file') . '</info> </comment>');
-    runLocally('wp db import .data/db_backups/' . get('dump_file'));
+//    runLocally('wp db import .data/db_backups/' . get('dump_file'));
+    runLocally('tail +2 .data/db_backups/' . get('dump_file') . ' | wp db import -');
     runLocally('wp search-replace ' . get('remote_url') . ' ' . get('local_url'));
     runLocally('rm -f .data/db_backups/' . get('dump_file'));
 
