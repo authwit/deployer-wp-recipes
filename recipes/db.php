@@ -8,7 +8,6 @@ namespace Deployer;
 use DotEnv;
 
 // BACKUP DB REMOTE TO LOCAL
-
 task('db:remote:backup', function() {
 
     $config = get('wp-recipes');
@@ -28,7 +27,6 @@ task('db:remote:backup', function() {
 })->desc('Download backup database');
 
 // BACKUP DB LOCAL TO REMOTE
-
 task('db:local:backup', function() {
 
     $config = get('wp-recipes');
@@ -40,7 +38,13 @@ task('db:local:backup', function() {
 
     writeln('<comment>> Local dump : <info>' . get('dump_file') .' </info></comment>');
     runLocally('mkdir -p .data/db_backups');
-    runLocally('wp db export .data/db_backups/' . get('dump_file') . ' --add-drop-table --hex-blob');
+
+    // re-activate disabled plugins
+    runLocally('wp plugin activate ' . get('dev_deactivated_plugins'));
+
+    // excludes all the WooCommerce tables to prevent overwriting this data in remote
+    // see (High-Performance Order Storage),  https://bit.ly/3QWEFrM
+    runLocally('wp db export .data/db_backups/' . get('dump_file') . ' --add-drop-table --hex-blob --exclude_tables=wp_wc_admin_note_actions,wp_wc_admin_notes,wp_wc_category_lookup,wp_wc_comments_subscription,wp_wc_customer_lookup,wp_wc_download_log,wp_wc_feedback_forms,wp_wc_follow_users,wp_wc_order_addresses,wp_wc_order_coupon_lookup,wp_wc_order_operational_data,wp_wc_order_product_lookup,wp_wc_order_stats,wp_wc_order_tax_lookup,wp_wc_orders,wp_wc_orders_meta,wp_wc_phrases,wp_wc_product_attributes_lookup,wp_wc_product_download_directories,wp_wc_product_meta_lookup,wp_wc_rate_limits,wp_wc_reserved_stock,wp_wc_tax_rate_classes,wp_wc_users_rated,wp_wc_users_voted,wp_wc_webhooks');
 
     run('mkdir -p ' . get('dump_path'));
     upload('.data/db_backups/' . get('dump_file'),  get('dump_filepath'));
@@ -62,12 +66,14 @@ task('db:cmd:pull', function() {
 //    runLocally('wp db import .data/db_backups/' . get('dump_file'));
     runLocally('tail +2 .data/db_backups/' . get('dump_file') . ' | wp db import -');
     runLocally('wp search-replace ' . get('remote_url') . ' ' . get('local_url'));
+
+    # deactivate non-dev critical plugins
+    runLocally('wp plugin deactivate ' . get('dev_deactivated_plugins'));
     runLocally('rm -f .data/db_backups/' . get('dump_file'));
 
 })->desc('Imports DB');
 
 // PUSH DB
-
 task('db:cmd:push', function() {
     writeln('<comment>> Exports local db to remote : <info>' . get('dump_file') . '</info>... </comment>');
     run('cd {{deploy_path}}/current && wp-cli db import ' . get('dump_filepath'));
