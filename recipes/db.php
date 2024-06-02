@@ -41,6 +41,7 @@ task('db:local:backup', function() {
 
     // re-activate disabled plugins
     runLocally('wp plugin activate ' . get('dev_deactivated_plugins'));
+    runLocally('wp plugin deactivate ' . get('prod_deactivated_plugins'));
 
     // excludes all the WooCommerce tables to prevent overwriting this data in remote
     // see (High-Performance Order Storage),  https://bit.ly/3QWEFrM
@@ -69,6 +70,7 @@ task('db:cmd:pull', function() {
 
     # deactivate non-dev critical plugins
     runLocally('wp plugin deactivate ' . get('dev_deactivated_plugins'));
+    runLocally('wp plugin activate ' . get('prod_deactivated_plugins'));
     runLocally('rm -f .data/db_backups/' . get('dump_file'));
 
 })->desc('Imports DB');
